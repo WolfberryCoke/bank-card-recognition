@@ -102,3 +102,10 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+.idea
+.xml
+dataset/
+card_recognize/weights/
+demo/test_images/
+demo/test_result/
