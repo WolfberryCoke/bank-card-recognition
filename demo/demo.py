@@ -1,7 +1,7 @@
 '''
 预测部分
 '''
-from card_recognize.predict import get_predict_result, get_accuracy
+from card_recognize.predict import get_predict_result
 
 
 def recognize_image_set(image_set_path, result_set_path, result_path):
@@ -14,15 +14,15 @@ def recognize_image_set(image_set_path, result_set_path, result_path):
     :param result_path:
     :return: 无
     '''
-    model_path = '../card_recognize/weights/weights_2019_06_04_09_56_37.h5'
+    model_path = '../card_recognize/weights/weights_2019_07_08_15_06_27.h5'
+    # model_path = '../card_recognize/weights/weights_2019_06_05_18_16_40.h5'
     all_result_list = get_predict_result(image_set_path, result_set_path, model_path)
-    # 结果写入文件
+    # for i in range(len(all_result_list)):
+    #     get_blank_space(all_result_list[i])
+     # 结果写入文件
     with open(result_path, 'w') as f:
         for one in all_result_list:
             f.write(one + '\n')
-
-    xml_set_path = '../dataset/annotation/'
-    get_accuracy(result_path, xml_set_path)
 
 
 if __name__ == '__main__':

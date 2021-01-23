@@ -14,14 +14,18 @@ from util.model_data_handler import get_classes, get_anchors
 from card_recognize.kmeans import Kmeans
 from card_recognize.data_make import data_split, add_path
 import os
+import matplotlib.pyplot as plt
+from keras.utils import plot_model
+
+os.environ["PATH"] += os.pathsep + 'F:/Graphviz/bin'
 
 # 去掉GPU的信息提示
-# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 # 获取网络训练当前时间
 nowTime = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 # 超参数
 batch_size = 1
-iterations = 100
+iterations = 1
 
 
 def main():
@@ -47,11 +51,12 @@ def main():
     anchors_path = 'model_data/yolo_anchors.txt'
     class_names = get_classes(classes_path)
     anchors = get_anchors(anchors_path)
-    input_shape = (416, 416)
+    input_shape = (544, 544)
     model = create_model(input_shape, anchors, len(class_names))
 
     # 做训练
     log_dir = ('weights/weights_%s' % nowTime + '.h5')
+
     train(model, annotation_path, input_shape, anchors, len(class_names), log_dir=log_dir)
 
 
@@ -72,11 +77,6 @@ def train(model, annotation_path, input_shape, anchors, num_classes, log_dir):
     :param log_dir: 保存路径
     :return: 无
     '''
-    # 该回调函数将日志信息写入TensorBorad
-    logging = TensorBoard(log_dir=log_dir)
-    # 该回调函数将在每5个epoch后保存最优的模型参数
-    checkpoint = ModelCheckpoint(log_dir + 'ep{epoch:03d}-loss{loss:.3f}-val_loss{val_loss:.3f}.h5',
-                                 monitor='val_loss', save_weights_only=True, save_best_only=True, period=5)
     # 当评价指标不再提升时，减少学习率
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=3, verbose=1)
     # 当监测值不再改善时，该回调函数将中止训练
@@ -90,13 +90,37 @@ def train(model, annotation_path, input_shape, anchors, num_classes, log_dir):
     num_train = len(lines) - num_val
     print('Train on {} samples, validate on {} samples, with batch size {}.'.format(num_train, num_val, batch_size))
 
-    model.fit_generator(generator=data_generator(lines[:num_train], batch_size, input_shape, anchors, num_classes),
-                        steps_per_epoch=max(1, num_train // batch_size),
-                        validation_data=data_generator(lines[num_train:], batch_size, input_shape, anchors,
-                                                       num_classes),
-                        validation_steps=max(1, num_val // batch_size),
-                        epochs=iterations)
+    history = model.fit_generator(
+        generator=data_generator(lines[:num_train], batch_size, input_shape, anchors, num_classes),
+        steps_per_epoch=max(1, num_train // batch_size),
+        # callbacks=[logging, checkpoint, reduce_lr, early_stopping],
+        validation_data=data_generator(lines[num_train:], batch_size, input_shape, anchors,
+                                       num_classes),
+        validation_steps=max(1, num_val // batch_size),
+        epochs=iterations)
+    # 绘制训练 & 验证的准确率值
+    # print(history.history.keys())
+    # plt.plot(history.history['acc'])
+    # plt.plot(history.history['val_acc'])
+    # plt.title('Model accuracy')
+    # plt.ylabel('Accuracy')
+    # plt.xlabel('Epoch')
+    # plt.legend(['Train', 'Test'], loc='upper left')
+    # plt.show()
+
+    # 绘制训练 & 验证的损失值
+    # plt.plot(history.history['loss'])
+    # plt.plot(history.history['val_loss'])
+    # plt.title('Model loss')
+    # plt.ylabel('Loss')
+    # plt.xlabel('Epoch')
+    # plt.legend(['Train', 'Test'], loc='upper left')
+    # plt.show()
+
+    # plot_model(model, to_file='model.png')
+
     model.save_weights(log_dir)
+
     print('model has been trained!\n')
 
 
@@ -123,7 +147,7 @@ def create_model(input_shape, anchors, num_classes):
                         arguments={'anchors': anchors, 'num_classes': num_classes, 'ignore_thresh': 0.5})(
         [*model_body.output, *y_true])
     model = Model([model_body.input, *y_true], model_loss)
-    model.compile(optimizer='adam', loss={'yolo_loss': lambda y_true, y_pred: y_pred})
+    model.compile(optimizer='adam', loss={'yolo_loss': lambda y_true, y_pred: y_pred}, metrics=['accuracy'])
     return model
 
 

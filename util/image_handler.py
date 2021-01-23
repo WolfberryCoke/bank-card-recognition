@@ -80,7 +80,7 @@ def draw_box(image, box, result_save_path, scale, padding):
     '''
     top, left, bottom, right = box
     draw = ImageDraw.Draw(image)
-    line = 5
+    line = 7
     width = (right - left) / scale
     height = (bottom - top) / scale
     left = (left - padding[0]) / scale
@@ -88,4 +88,6 @@ def draw_box(image, box, result_save_path, scale, padding):
     for i in range(1, line + 1):
         draw.rectangle((left + (line - i), top + (line - i), left + width + i, top + height + i), outline='red')
 
+    image = image.convert("RGB")
     image.save(result_save_path)
+

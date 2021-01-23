@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>浏览器定位</title>
+    <link rel="stylesheet" href="https://cache.amap.com/lbs/static/main1119.css"/>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+    <style type="text/css">
+        .amap-marker .marker-route {
+            position: absolute;
+            width: 40px;
+            height: 44px;
+            color: #e90000;
+            background: url(https://webapi.amap.com/theme/v1.3/images/newpc/poi-1.png) no-repeat;
+            cursor: pointer;
+        }
+        .amap-marker .marker-marker-bus-from {
+            background-position: -334px -180px;
+        }
+    </style>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.9&key=b0ce7b41b8e2d673bf831327aa76fd18"></script>
+    <script type="text/javascript" src="https://cache.amap.com/lbs/static/addToolbar.js"></script>
+</head>
+<body>
+     <div id="page-wrapper" class="container-fluid">
+        <div class="row">
+        	<span class="col-sm-9" style="font-size: 25px;">
+	        	BankCard Recognition
+        	</span>
+        	<span class="col-sm-2">
+	        	<button id="headImage" class="btn btn-danger">
+        	</span>
+        	Select
+        	</button>
+        </div>
+        
+		<img id="image" src=""/ style="width: 100%;">
+		<div id="result">
+			
+		</div>
+        
+
+    </div>
+     <script src="js/jquery.js"></script>
+     <script src="js/mui.min.js"></script>
+     <!--<script src="js/pic.js"></script>-->
+     <script>
+     	
+     	mui.init();
+     	plus = mui.os.plus;
+     	
+        window.onload = function () {
+             
+            document.getElementById('headImage').addEventListener('click', function() {
+	            if (mui.os.plus) {
+	                var a = [{
+	                    title: "拍照"
+	                }, {
+	                    title: "从手机相册选择"
+	                }];
+	                plus.nativeUI.actionSheet({
+	                    title: "上传银行卡",
+	                    cancel: "取消",
+	                    buttons: a
+	                }, function(b) { /*actionSheet 按钮点击事件*/
+	                    switch (b.index) {
+	                        case 0:
+	                            break;
+	                        case 1:
+	                            getImage(); /*拍照*/
+	                            break;
+	                        case 2:
+	                            galleryImg();/*打开相册*/
+	                            break;
+	                        default:
+	                            break;
+	                    }
+	                })
+	            }
+        	}, false);
+        }
+        
+    function getImage() {
+	    var c = plus.camera.getCamera();
+	    c.captureImage(function(e) {
+	        plus.io.resolveLocalFileSystemURL(e, function(entry) {
+	            var s = entry.toLocalURL() + "?version=" + new Date().getTime();
+	            uploadHead(s); /*上传图片*/
+	        }, function(e) {
+	            console.log("读取拍照文件错误：" + e.message);
+	        });
+	    }, function(s) {
+	        console.log("error" + s);
+	    }, {
+	        filename: "_doc/head.png"
+	    })
+	}
+
+	//本地相册选择
+	function galleryImg() {
+	    plus.gallery.pick(function(a) {
+	        plus.io.resolveLocalFileSystemURL(a, function(entry) {
+	            plus.io.resolveLocalFileSystemURL("_doc/", function(root) {
+	                root.getFile("head.png", {}, function(file) {
+	                    //文件已存在
+	                    file.remove(function() {
+	                        console.log("file remove success");
+	                        entry.copyTo(root, 'head.png', function(e) {
+	                                var e = e.fullPath + "?version=" + new Date().getTime();
+	                                uploadHead(e); /*上传图片*/
+	                                //变更大图预览的src
+	                                //目前仅有一张图片，暂时如此处理，后续需要通过标准组件实现
+	                            },
+	                            function(e) {
+	                                console.log('copy image fail:' + e.message);
+	                            });
+	                    }, function() {
+	                        console.log("delete image fail:" + e.message);
+	                    });
+	                }, function() {
+	                    //文件不存在
+	                    entry.copyTo(root, 'head.png', function(e) {
+	                            var path = e.fullPath + "?version=" + new Date().getTime();
+	                            uploadHead(path); /*上传图片*/
+	                        },
+	                        function(e) {
+	                            console.log('copy image fail:' + e.message);
+	                        });
+	                });
+	            }, function(e) {
+	                console.log("get _www folder fail");
+	            })
+	        }, function(e) {
+	            console.log("读取拍照文件错误：" + e.message);
+	        });
+	    }, function(a) {}, {
+	        filter: "image"
+	    })
+	};
+	function uploadHead(imgPath) {
+        console.log("imgPath = " + imgPath);
+        $('#image').attr('src', imgPath);
+        $('#result').text(" ");
+//      mainImage.src = imgPath;
+//      mainImage.style.width = "60px";
+//      mainImage.style.height = "60px";
+		
+		var uploadUrl = "http://192.168.1.106:5000/prediction"
+        var image = new Image();
+        image.src = imgPath;
+        image.onload = function() {
+            var imgData = getBase64Image(image);
+            console.log(imgData);
+            /*在这里调用上传接口*/
+//          mui.ajax(url, {
+//              data: {
+//              	'data':imgData
+//              },
+//              dataType: 'json',
+//              type: 'post',
+//              timeout: 10000,
+//              success: function(data) {
+//                  console.log('上传成功');
+//              },
+//              error: function(xhr, type, errorThrown) {
+//              	console.log('网络异常，请稍后再试！');
+//                  mui.toast('网络异常，请稍后再试！');
+//              }
+//          });
+            $.ajax({                                   
+		        url: uploadUrl,
+		        type: 'post',
+		        data: {
+                	'data':imgData
+                },
+		        error: function(request) {
+		            // console.log(request);
+		            console.log('error');
+		            mui.toast('网络异常，请稍后再试!');
+		        },
+		        success: function(data) {
+		            console.log(data); 
+		         	mui.toast('上传成功!');
+		         	$('#result').html("识别结果：<hr>"+data);
+		        }
+		    });
+        }
+   	}
+	//将图片压缩转成base64
+    function getBase64Image(img) {
+        var canvas = document.createElement("canvas");
+        var width = img.width;
+        var height = img.height;
+        // calculate the width and height, constraining the proportions
+        //------------------------------------------------------------------resize----------------------------------------------------------
+//      if (width > height) {
+//          if (width > 100) {
+//              height = Math.round(height *= 100 / width);
+//              width = 100;
+//          }
+//      } else {
+//          if (height > 100) {
+//              width = Math.round(width *= 100 / height);
+//              height = 100;
+//          }
+//      }
+        //------------------------------------------------------------------resize----------------------------------------------------------
+        canvas.width = width;   /*设置新的图片的宽度*/
+        canvas.height = height; /*设置新的图片的长度*/
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height); /*绘图*/
+        var dataURL = canvas.toDataURL("image/jpeg", 0.8);
+        return dataURL.replace("data:image/jpeg;base64,", "");
+    }
+    </script>
+</body>
+</html>

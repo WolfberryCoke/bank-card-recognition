@@ -165,13 +165,7 @@ def yolo_boxes_and_scores(feats, anchors, num_classes, input_shape, image_shape)
     return boxes, box_scores
 
 
-def yolo_eval(yolo_outputs,
-              anchors,
-              num_classes,
-              image_shape,
-              score_threshold=.6,
-              iou_threshold=.5,
-              max_boxes=20):
+def yolo_eval(yolo_outputs, anchors, num_classes, image_shape, score_threshold, iou_threshold, max_boxes=20):
     '''YOLO模型的评价机制'''
     num_layers = len(yolo_outputs)
     anchor_mask = [[6, 7, 8], [3, 4, 5], [0, 1, 2]] if num_layers == 3 else [[3, 4, 5], [1, 2, 3]]  # default setting
@@ -192,7 +186,6 @@ def yolo_eval(yolo_outputs,
     scores_ = []
     classes_ = []
     for c in range(num_classes):
-        # TODO: use keras backend instead of tf.
         class_boxes = tf.boolean_mask(boxes, mask[:, c])
         class_box_scores = tf.boolean_mask(box_scores[:, c], mask[:, c])
         nms_index = tf.image.non_max_suppression(
@@ -211,20 +204,13 @@ def yolo_eval(yolo_outputs,
 
 
 def preprocess_true_boxes(true_boxes, input_shape, anchors, num_classes):
-    '''Preprocess true boxes to training input format
-
-    Parameters
-    ----------
-    true_boxes: array, shape=(m, T, 5)
-        Absolute x_min, y_min, x_max, y_max, class_id relative to input_shape.
-    input_shape: array-like, hw, multiples of 32
-    anchors: array, shape=(N, 2), wh
-    num_classes: integer
-
-    Returns
-    -------
-    y_true: list of array, shape like yolo_outputs, xywh are reletive value
-
+    '''
+    将标记数据转换成YOLO网络需要的数据格式
+    :param true_boxes: shape为(m, T, 5)
+    :param input_shape: [height,weight]
+    :param anchors: 聚类中心集合
+    :param num_classes: 标签个数
+    :return: list d
     '''
     assert (true_boxes[..., 4] < num_classes).all(), 'class id must be less than num_classes'
     num_layers = len(anchors) // 3  # default setting
@@ -242,17 +228,14 @@ def preprocess_true_boxes(true_boxes, input_shape, anchors, num_classes):
     y_true = [np.zeros((m, grid_shapes[l][0], grid_shapes[l][1], len(anchor_mask[l]), 5 + num_classes),
                        dtype='float32') for l in range(num_layers)]
 
-    # Expand dim to apply broadcasting.
     anchors = np.expand_dims(anchors, 0)
     anchor_maxes = anchors / 2.
     anchor_mins = -anchor_maxes
     valid_mask = boxes_wh[..., 0] > 0
     # 每个图片都需要单独处理
     for b in range(m):
-        # Discard zero rows.
         wh = boxes_wh[b, valid_mask[b]]
         if len(wh) == 0: continue
-        # Expand dim to apply broadcasting.
         wh = np.expand_dims(wh, -2)
         box_maxes = wh / 2.
         box_mins = -box_maxes
@@ -263,7 +246,6 @@ def preprocess_true_boxes(true_boxes, input_shape, anchors, num_classes):
         intersect_area = intersect_wh[..., 0] * intersect_wh[..., 1]
         box_area = wh[..., 0] * wh[..., 1]
         anchor_area = anchors[..., 0] * anchors[..., 1]
-        # 计算 IOU 的公式
         iou = intersect_area / (box_area + anchor_area - intersect_area)
 
         # 9个设定的ANCHOR去框定每个输入的BOX
@@ -383,7 +365,7 @@ def yolo_loss(args, anchors, num_classes, ignore_thresh=.5, print_loss=False):
         ignore_mask = ignore_mask.stack()
         ignore_mask = K.expand_dims(ignore_mask, -1)
 
-        # K.binary_crossentropy is helpful to avoid exp overflow.
+        # K.binary_crossentropy 可以避免溢出情况发生
         xy_loss = object_mask * box_loss_scale * K.binary_crossentropy(raw_true_xy, raw_pred[..., 0:2],
                                                                        from_logits=True)
         wh_loss = object_mask * box_loss_scale * 0.5 * K.square(raw_true_wh - raw_pred[..., 2:4])

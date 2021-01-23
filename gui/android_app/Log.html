@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="css/bootstrap.min.css" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="css/myApp.css" />
+		<link rel="stylesheet" href="css/Log.css" />	
+		<script type="text/javascript" src="js/common.js"></script>
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/moment.min.js"></script>
+		<script type="text/javascript" src="js/vue.js"></script>
+		<script type="text/javascript" src="js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/pcode.js"></script>
+	</head>
+
+	<body>
+		<script src="js/mui.min.js">
+			mui.init();
+		</script>
+		<!--输入mheader按下回车键快速创建头部导航-->
+		<header class="mui-bar mui-bar-nav">
+		    <h1 class="mui-title">Log</h1>
+		</header>
+		<div class="mui-content">
+			<img id="NuaaImg" src="fonts/logo.jpg"/>
+			<form class="mui-input-group">
+			    <div class="mui-input-row">
+			        <label>用户名</label>
+			    <input type="text" class="mui-input-clear" id="email" placeholder="请输入用户名">
+			    </div>
+			    <div class="mui-input-row">
+			        <label>密码</label>
+			        <input type="password" class="mui-input-password" id="password" placeholder="请输入密码">
+			    </div>
+			    <div class="mui-button-row">
+			    	<button type="button" class="mui-btn mui-btn-primary" id="login" onclick="log()">登录</button>
+			    	<button type="button" class="mui-btn mui-btn-primary" id="reg"><a href="Reg.html">注册</a></button>
+			    </div>
+			</form>
+		</div>
+		<script type="text/javascript">
+			function log(){
+				//check 阶段
+				window.location = "index.html";
+//				var checkEmail =  /\w+[@]{1}\w+[.]\w+/;
+//				var checkPas = /\S{6,16}/;
+//				if($('#email').val()==""){
+//					mui.alert('邮箱不能为空','Warning','好');
+//					return false;
+//				}else if(!checkEmail.test($('#email').val())){
+//					mui.alert('邮箱非法','Warning','好');
+//					return false;
+//				}else if($('#password').val()==""){
+//					mui.alert('密码不能为空','Warning','好');
+//					return false;
+//				}
+//				
+//				
+//				var Url = apiUrl+'/Home/Api/checkLog';
+//				var userEmail = $('#email').val();
+//				var userPas = $('#password').val();
+//				userPas = $.nuaaMD5(userPas);
+//				
+//	            $.post(Url, {		
+//				   password: userPas,
+//				   email: userEmail
+//				  },function(data, status) {
+//				  	console.log(data);
+//				  	data = JSON.parse(data);
+//				  	console.log(data);
+//				  	if(data['0']){					//验证码不对
+//						mui.alert(data['0'],'Warning','好');
+//				  	}else if(data['token']){
+//				  		mui.alert("登录成功",'Success','好',function(){	
+//				  			setLocalStorage(data);
+//				  			window.location = "Main.html";
+//				  		});
+//				  	}
+//				});
+			}
+			function setLocalStorage(data){					//设置localStorage
+				var storage = window.localStorage;
+				storage['user'] = JSON.stringify(data);
+				var info = JSON.parse(localStorage['user']);
+				console.log(info);
+				console.log(info.token);
+			}
+			function ceshi(){
+				$.ajax({
+			        type: "POST",
+			        url: "https://kyfw.12306.cn/otn/passcodeNew/checkRandCodeAnsyn",
+			        contentType: "application/json",
+			        dataType: "json",
+			        data: {
+						randCode: "123,47,34,116",
+						rand: "sjrand"
+					},
+			        success: function(data) {           
+			            console.log(data);      
+			        },
+			        error: function(data) {
+						console.log(data);
+			        }
+			    });
+		   }
+			
+			
+		</script>
+	</body>
+
+</html>

@@ -103,9 +103,18 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+# mydefine
 .idea
 .xml
 dataset/
 card_recognize/weights/
 demo/test_images/
 demo/test_result/
+data_augmetation/dest_image/
+data_augmetation/dest_xml/
+data_augmetation/src_image/
+data_augmetation/src_xml/
+dataset/annotation/
+dataset/images/
+dataset/label/
+dataset/name/

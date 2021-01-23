@@ -102,8 +102,8 @@ def augment(src_image_path, dest_image_path, src_xml_path, dest_xml_path):
 
 
 if __name__ == "__main__":
-    src_image_path = 'JPEGImages'
-    dest_image_path = 'generate_image'
-    src_xml_path = 'complex_xml'
-    dest_xml_path = 'generate_xml'
+    src_image_path = 'src_image'
+    dest_image_path = 'dest_image'
+    src_xml_path = 'src_xml'
+    dest_xml_path = 'dest_xml'
     augment(src_image_path, dest_image_path, src_xml_path, dest_xml_path)

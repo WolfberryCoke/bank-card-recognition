@@ -1,0 +1,23 @@
+#box{
+	display: block;
+	margin: 10px auto;
+	width: 100px;
+	height: 100px;
+	border-radius: 100px;
+}
+
+#btn{
+	display: block;
+	margin: 10px auto;
+}
+
+a{
+	color: white;
+	text-decoration: none;
+}
+.mui-input-row label{
+	width: 40%;
+}
+.mui-input-row label~input, .mui-input-row label~select, .mui-input-row label~textarea{
+	width: 60%;
+}

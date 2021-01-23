@@ -1,0 +1,1 @@
+通过运行 demo.py 载入 test_images 目录下的所有银行卡图片，经过定位、识别，将输出结果写入 test_result 目录和 result.txt 中

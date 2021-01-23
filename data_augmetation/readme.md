@@ -1,0 +1,1 @@
+运行 data_augment.py 将src_image目录下的图片经过数据增强之后放在dest_image目录下

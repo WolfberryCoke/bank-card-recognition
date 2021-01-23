@@ -1,0 +1,61 @@
+/*.mui-content{
+	display: block;
+	margin-top: 20px;
+}*/
+
+/*当前课程*/
+.classNowDiv{
+	display: block;
+	width: 100%;
+	height: 50px;
+	background: white;
+}
+.classNowDiv .classNowSmallDiv{
+	display: block;
+	width: 75%;
+	height: 100%;
+	padding: 4%;
+	float: left;
+	background: #F2F2F2;
+}
+.classNowDiv .classNowSmallDiv span{
+	margin-right: 10px;
+}
+.classNowDiv .sign{
+	display: block;
+	width: 25%;
+	height: 100%;
+	padding: 3%;
+	float: left;
+}
+
+
+
+
+/*课程进度条*/
+.classProgress{
+	display: block;
+	width: 100%;
+	height: 40px;
+	padding: 3%;
+	background: #F7F7F7;
+}
+.classProgress .classProgressStr{
+	display: block;
+	width: 30%;
+	height: 100%;
+	float: left;
+}
+.classProgress .mui-progressbar{
+	width: 70%;
+	height: 17px;
+	float: left;
+}
+
+
+/*当天课程*/
+.classTable{
+	display: block;
+	width: 100%;
+	height: 360px;
+}

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+</head>
+<body>
+<nav class="mui-bar mui-bar-tab">
+        <a id="defaultTab" class="mui-tab-item mui-active" href="gps.html">
+            <span class="mui-icon mui-icon-map"></span>
+            <span class="mui-tab-label">GPS</span>
+        </a>
+        <a class="mui-tab-item" href="pic.html">
+            <span class="mui-icon mui-icon-videocam"></span>
+            <span class="mui-tab-label">Pic</span>
+        </a>
+        <a class="mui-tab-item" href="home.html">
+            <span class="mui-icon mui-icon-home"></span>
+            <span class="mui-tab-label">Home</span>
+        </a>
+</nav>
+
+<script src="js/castapp.js"></script>
+<script type="text/javascript">
+	//初始化
+	ca.init();
+	
+	var pathArray = ['gps.html','pic.html','home.html'];
+	castapp.tabBar(pathArray);
+</script>
+</body>
+</html>

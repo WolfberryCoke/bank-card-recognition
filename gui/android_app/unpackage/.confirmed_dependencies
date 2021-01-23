@@ -1,0 +1,62 @@
+{
+  "index.html": {
+    "resources": [
+      "js/mui.min.js",
+      "fonts/mui.ttf",
+      "css/mui.min.css",
+      "gps.html",
+      "js/castapp.js",
+      "Log.html"
+    ],
+    "refer": [
+      "gps.html",
+      "pic.html",
+      "home.html",
+      "Log.html"
+    ]
+  },
+  "pic.html": {
+    "resources": [
+      "css/mui.min.css",
+      "js/mui.zoom.js",
+      "js/mui.previewimage.js",
+      "js/jquery.js",
+      "js/castapp.js",
+      "js/mui.min.js",
+      "js/my.js"
+    ]
+  },
+  "gps.html": {
+    "resources": [
+      "fonts/my.png"
+    ]
+  },
+  "home.html": {
+    "resources": [
+      "css/home.css",
+      "css/image.viewer.css",
+      "css/myApp.css",
+      "js/castapp.js",
+      "js/mui.min.js",
+      "fonts/mui.ttf",
+      "css/mui.min.css",
+      "fonts/my.png"
+    ]
+  },
+  "Log.html": {
+    "resources": [
+      "js/mui.min.js",
+      "fonts/mui.ttf",
+      "css/Log.css",
+      "css/mui.min.css",
+      "css/myApp.css",
+      "js/jquery.js",
+      "css/bootstrap.min.css",
+      "fonts/logo.jpg",
+      "index.html"
+    ],
+    "refer": [
+      "index.html"
+    ]
+  }
+}

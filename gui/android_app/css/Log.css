@@ -1,0 +1,17 @@
+
+#NuaaImg{
+	display: block;
+	margin: 10px auto;
+	width: 100px;
+	height: 100px;
+	border-radius: 100px;
+}
+
+.mui-button-row a{
+	color: #fff;
+}
+
+a{
+	text-decoration: none;
+}
+
